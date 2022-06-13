@@ -5,18 +5,23 @@
 
 
 
-void sortArray(int* arr, int n)
+void sortArray(int* arr, int size)
 {
 	// n개의 정수를 오름차순으로 정렬
-	for (int i = 0; i < n; i++)
+	// 버블 소트는 여러 페이즈로 이뤄지며, 각 페이가 끝날 시 맨 끝 원소부터 정렬.
+	for (int phase = 0; phase < size - 1; phase++)
 	{
-		for (int j = 0; j < n; j++)
+		for (int i = 0; i < size - 1 - phase; i++)
 		{
+			
+			
 			// 배열의 원소를 비교하여 특정 원소가 다른 원소보다 작다면
-			if (arr[i] < arr[j])
+			// 오름차순으로 정렬
+			if (arr[i] > arr[i + 1])
 			{
+
 				//값을 바꿔줌
-				std::swap(arr[j],arr[i]);
+				std::swap(arr[i], arr[i + 1]);
 			}
 
 		}
