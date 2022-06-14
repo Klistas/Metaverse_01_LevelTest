@@ -1,6 +1,8 @@
-#include <stdio.h>
+#include <algorithm>
 #include <stdlib.h>
 #include <time.h>
+#include <iostream>
+
 /*	
 로또 번호 생성기를 구현 하시오.
 A.	최대 번호값과 생성 숫자 개수를 입력하면 해당 조건 내에서 중복되지 않는 숫자를 출력하는 로또 번호 생성기를 구현.
@@ -8,42 +10,111 @@ B.	최대값 : 60, 생성숫자 : 10 을 입력하면 1 ~ 60 사이의 중복되지 않는 숫자 10개�
 
 */
 
+//동적 할당의 문제점. (메모리를 수동으로 관리할 때의 문제점)
+// 1. 할당은 했는데 해제를 안했다. -> 메모리 누수.(Memory Leak)
+// 2. 이미 해제한 메모리에 대해 또 해제 -> 이중 해제.(Double Free)
+//    - 이미 해제한 메모리를 가리키는 포인터 -> 댕글링 포인터(Dangling Pointer)
+// 3. 너무 빨리 해제했다. -> 조기 해제(Premature Free)
+
+
+using namespace std;
 
 
 
-void lotteryMaker(int maxNum, int makeNum)
+class LimitedLotto
 {
-	// 랜덤 시드 생성
-	srand(time(NULL));
-	//저장할 배열 생성
-	int* lotteryNum = new int[makeNum];
-	
-	for (int curPos = 0; curPos < maxNum; curPos++)
+	static const int MAX_DIGIT_COUNT = 100;
+
+public:
+	LimitedLotto() = default;
+	LimitedLotto(const LimitedLotto& other) = delete;
+	LimitedLotto& operator=(const LimitedLotto& other) = delete;
+	~LimitedLotto()
 	{
-		int candidate = 0;
-		lotteryNum[curPos] = rand() % maxNum + 1;
-		bool isExist = false;
-		for (int i = 0; i < maxNum; i++)
-		{
-			candidate = lotteryNum[curPos];
-			isExist = false;
-			do
-			{
-				if (lotteryNum[curPos] == lotteryNum[i])
-				{
-					isExist = true;
-					lotteryNum[curPos] = rand() % maxNum + 1;
-					candidate = lotteryNum[curPos];
-					break;
-				}
-			} while (isExist);
-		}
-		printf("%d \n", lotteryNum[curPos]);
+		Clear();
 	}
 
+
+	/// <summary>
+	/// 데이터를 지운다.
+	/// </summary>
+	void Clear()
+	{
+		_digitCount = 0;
+	}
+
+
+	/// <summary>
+	/// 로또 번호를 생성한다. 이미 생성된 번호가 있다면 지우고 새로 만든다.
+	/// </summary>
+	/// <param name="maxValue">최대 번호값</param>
+	/// <param name="digitCount">생성 숫자 개수</param>
+	void Make(int maxValue, int digitCount)
+	{
+		// digitCount : [1, 100]
+		// 1. digitCount가 최소값(1) 보다 작을 때.
+		// 2. digitCount가 최대값(100) 보다 클 때.
+		// 3. digitCount가 최대값과 최소값의 사이에 있을 때.
+		digitCount = max(1, min(digitCount,MAX_DIGIT_COUNT));
 	
-	delete[] lotteryNum;
-}
+		// min(a,b) 는 a와 b중에서 작은 수를 반환
+		// max(a,b) 는 a와 b중에서 큰 수를 반환.
+		Clear();
+
+		// 랜덤 시드 생성
+		srand(time(NULL));
+
+		_digitCount = digitCount;
+
+		for (int curPos = 0; curPos < digitCount; curPos++)
+		{
+			int candidate = 0;
+
+			_lotto[curPos] = rand() % digitCount + 1;
+
+			bool isExist = false;
+
+			for (int i = 0; i < digitCount; i++)
+			{
+				candidate = _lotto[curPos];
+				isExist = false;
+				do
+				{
+					if (_lotto[curPos] == _lotto[i])
+					{
+						isExist = true;
+						_lotto[curPos] = rand() % digitCount + 1;
+						candidate = _lotto[curPos];
+						break;
+					}
+				} while (isExist);
+			}
+
+			_lotto[curPos] = candidate;
+			isExist = true;
+			printf("%d \n", _lotto[curPos]);
+		}
+
+
+	}
+	void Print()
+	{
+		for (int i = 0; i < _digitCount; i++)
+		{
+			cout << _lotto[i] << " ";
+		}
+		cout << endl;
+	}
+
+
+
+
+private:
+	int _lotto[MAX_DIGIT_COUNT] = { 0 };
+	int  _digitCount = 0;
+};
+
+
 
 
 
@@ -52,10 +123,17 @@ void lotteryMaker(int maxNum, int makeNum)
 int main(void)
 {
 
-	int maxNum, makeNum;
-	scanf_s("%d\n",&maxNum);
-	scanf_s("%d",&makeNum);
-	lotteryMaker(maxNum, makeNum);
+	cout << "최대 번호 값을 입력하세요 : ";
+	int maxValue;
+	cin >> maxValue;
+	cout << "생성할 숫자의 개수를 입력하세요 : ";
+	int digitCount;
+	cin >> digitCount;
+
+	LimitedLotto lotto;
+	lotto.Make(maxValue, digitCount);
+	lotto.Print();
+
 	return 0;
 
 }
@@ -72,39 +150,123 @@ int main(void)
 
 
 
+
+
+
 //
-//
-//void lotteryMaker(int maxNum, int makeNum)
+//class Lotto
 //{
-//	// 랜덤 시드 생성
-//	srand(time(NULL));
-//	//저장할 배열 생성
-//	int* lotteryNum = new int[makeNum];
-//	for (int i = 0; i < makeNum; i++)
+//public :	
+//	Lotto() = default;
+//	Lotto(const Lotto& other) = delete;
+//	Lotto& operator=(const Lotto& other) = delete;
+//	~Lotto()
+//	{
+//		Clear();
+//	}
+//
+//
+//	/// <summary>
+//	/// 데이터를 지운다.
+//	/// </summary>
+//	void Clear()
+//	{
+//		delete[] _lotto;
+//		_lotto = nullptr;
+//
+//		_digitCount = 0;
+//	}
+//
+//
+//	/// <summary>
+//	/// 로또 번호를 생성한다. 이미 생성된 번호가 있다면 지우고 새로 만든다.
+//	/// </summary>
+//	/// <param name="maxValue">최대 번호값</param>
+//	/// <param name="digitCount">생성 숫자 개수</param>
+//	void Make(int maxValue, int digitCount)
 //	{
 //
-//		// 랜덤 시드에 maxNum을 나머지 연산하여 최댓값 이내의 값 도출
-//		int checkNum = rand() % maxNum;
+//		Clear();
 //
-//		// lotteryNum[checkNum]으로 인덱스가 난수가 됨.
-//		lotteryNum[i] = 0;
-//
-//		// 값을 true와 false로 줘서 true일 때 접근하지 못하게.
-//		if (lotteryNum[checkNum] == 0)
+//		//저장할 배열 생성
+//		_lotto = new int[digitCount];
+//		
+//		// 랜덤 시드 생성
+//		srand(time(NULL));
+//			
+//			
+//		for (int curPos = 0; curPos < digitCount; curPos++)
 //		{
-//			lotteryNum[checkNum] = 1;
+//			int candidate = 0;
+//			
+//			_lotto[curPos] = rand() % digitCount + 1;
+//
+//			bool isExist = false;
+//
+//			for (int i = 0; i < digitCount; i++)
+//			{
+//				candidate = _lotto[curPos];
+//				isExist = false;
+//				do
+//				{
+//					if (_lotto[curPos] == _lotto[i])
+//					{
+//						isExist = true;
+//						_lotto[curPos] = rand() % digitCount + 1;
+//						candidate = _lotto[curPos];
+//						break;
+//					}
+//				} while (isExist);
+//			}		
+//
+//			_lotto[curPos] = candidate;
+//			isExist= true;
+//			printf("%d \n", _lotto[curPos]);
 //		}
-//		else
-//			checkNum = rand() % maxNum;
 //
-//
-//
-//		// 출력시 인덱스에 1을 더함.
-//		// 출력
-//		printf("%d\n", checkNum + 1);
 //
 //	}
-//	delete[] lotteryNum;
+//	void Print()
+//	{
+//		for (int i = 0; i < _digitCount; i++)
+//		{
+//			cout << _lotto[i] << " ";
+//		}
+//		cout << endl;
+//	}
+//
+//
+//
+//
+//private :
+//	int* _lotto = nullptr;
+//	int  _digitCount = 0;
+//};
+//
+//
+//
+//
+//
+//
+//
+//int main(void)
+//{
+//
+//	cout << "최대 번호 값을 입력하세요 : ";
+//	int maxValue;
+//	cin >> maxValue;
+//	cout << "생성할 숫자의 개수를 입력하세요 : ";
+//	int digitCount;
+//	cin >> digitCount;
+//
+//	Lotto lotto;
+//	lotto.Make(maxValue, digitCount);
+//	lotto.Print();
+//
+//	return 0;
+//
 //}
+
+
 
 
