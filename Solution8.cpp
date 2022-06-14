@@ -19,21 +19,99 @@ using namespace std;
 
 #define NOT_VISITED 0
 
-
-int main()
+class Snail
 {
-	// 1. 배열 만들기
-	cout << "배열의 크기를 입력하세요 : ";
-	int size;
-	cin >> size;
+public :
+	Snail() = default;
+	Snail(const Snail& other) = delete;
+	Snail& operator=(const Snail& other) = delete;
+	~Snail()
+	{
+		Clear();
+	}
 
-	int* arr = new int[size * size];
-	memset(arr, 0, sizeof(int) * size * size);
 
-	// 2.달팽이 배열 세팅
-	// 2 - 1. 달팽이 데이터 초기화
-	enum Direction 
-	{ 
+	void Clear()
+	{
+		delete[] arr;
+	}
+
+
+
+	void sizeInput(int size)
+	{
+		
+		_size = size;
+	
+	}
+
+	void makeArr()
+	{
+		int* arr = new int[_size * _size];
+		memset(arr, 0, sizeof(int) * _size * _size);
+
+		// 2.달팽이 배열 세팅
+		// 2 - 1. 달팽이 데이터 초기화
+	
+	}
+
+	void moveArr()
+	{
+		for (int i = 0; i < _size * _size; i++)
+		{
+			// 2-2 달팽이 움직임. 발자국을 남긴다.
+			arr[posX * _size + posY] = footstep;
+			++footstep;
+
+
+			// 2-3 이동할 위치를 계산한다.
+
+			static const int deltaX[] = { 1, 0, -1, 0 };
+			static const int deltaY[] = { 0, 1, 0, -1 };
+
+			int newX = posX + deltaX[(int)direction];
+			int newY = posY + deltaY[(int)direction];
+
+			// 2-4 이동이 가능한 지 판별한다.
+			// 2-4-1 벽에 닿았을 때 => posX, posY의 위치가 [0, size]
+			// 2-4-2 이미 지나온 곳일 때 => arr[newX][newY] != 0
+			if (newY < 0 || newY >= _size || newX < 0 || newX >= _size ||
+				arr[newY * _size + newX] != NOT_VISITED)
+			{
+				// 2-5. 이동이 불가능하므로 방향 전환을 한다.
+				direction = (Direction)((direction + 1) % DIR_MAX);
+
+				// 2-6 위치값을 다시 계산한다.
+				int newX = posX + deltaX[(int)direction];
+				int newY = posY + deltaY[(int)direction];
+			}
+			// 2-7 이동한다.
+			posX = newX;
+			posY = newY;
+		}
+	}
+
+	void printArr()
+	{
+		for (int i = 0; i < _size; i++)
+		{
+			for (int j = 0; j < _size; j++)
+			{
+				cout << arr[i * _size + j] << "\t";
+			}
+
+			cout << "\n";
+		}
+	}
+
+
+
+
+private :
+	int _size = 0;
+	int* arr = { nullptr };
+	enum Direction
+	{
 		DIR_RIGHT,
 		DIR_DOWN,
 		DIR_LEFT,
@@ -46,51 +124,25 @@ int main()
 	int footstep = 1;
 	Direction direction = DIR_RIGHT;
 
-	for (int i = 0; i < size * size; i++)
-	{
-		// 2-2 달팽이 움직임. 발자국을 남긴다.
-		arr[posX * size + posY] = footstep;
-		++footstep;
+};
 
 
-		// 2-3 이동할 위치를 계산한다.
-		
-		static const int deltaX[] = { 1, 0, -1, 0 };
-		static const int deltaY[] = { 0, 1, 0, -1 };
-
-		int newX = posX + deltaX[(int)direction];
-		int newY = posY + deltaY[(int)direction];
-		
-		// 2-4 이동이 가능한 지 판별한다.
-		// 2-4-1 벽에 닿았을 때 => posX, posY의 위치가 [0, size]
-		// 2-4-2 이미 지나온 곳일 때 => arr[newX][newY] != 0
-		if (newY < 0 || newY >= size || newX < 0 || newX >= size ||
-			arr[newY * size + newX] != NOT_VISITED)
-		{
-			// 2-5. 이동이 불가능하므로 방향 전환을 한다.
-			direction = (Direction)((direction + 1) % DIR_MAX);
-
-			// 2-6 위치값을 다시 계산한다.
-			int newX = posX + deltaX[(int)direction];
-			int newY = posY + deltaY[(int)direction];
-		}
-		// 2-7 이동한다.
-		posX = newX;
-		posY = newY;
-	}
+int main()
+{
+	Snail snail;
+	cout << "배열의 크기를 입력하세요 : ";
+	int input;
+	cin >> input;
+	snail.sizeInput(input);
+	snail.makeArr();
+	snail.moveArr();
+	snail.printArr();
 
 
-	// 3. 출력
-	for (int i = 0; i < size; i++)
-	{
-		for (int j = 0; j < size; j++)
-		{
-			cout << arr[i * size + j] << "\t";
-		}
-
-		cout << "\n";
-	}
+	
 }
+
+
 
 
 
@@ -211,3 +263,75 @@ int main()
 //}
 //
 //
+
+//int main()
+//{
+//	// 1. 배열 만들기
+//	cout << "배열의 크기를 입력하세요 : ";
+//	int size;
+//	cin >> size;
+//
+//	int* arr = new int[size * size];
+//	memset(arr, 0, sizeof(int) * size * size);
+//
+//	// 2.달팽이 배열 세팅
+//	// 2 - 1. 달팽이 데이터 초기화
+//	enum Direction
+//	{
+//		DIR_RIGHT,
+//		DIR_DOWN,
+//		DIR_LEFT,
+//		DIR_UP,
+//		DIR_MAX
+//	};
+//
+//	int posX = 0;
+//	int posY = 0;
+//	int footstep = 1;
+//	Direction direction = DIR_RIGHT;
+//
+//	for (int i = 0; i < size * size; i++)
+//	{
+//		// 2-2 달팽이 움직임. 발자국을 남긴다.
+//		arr[posX * size + posY] = footstep;
+//		++footstep;
+//
+//
+//		// 2-3 이동할 위치를 계산한다.
+//
+//		static const int deltaX[] = { 1, 0, -1, 0 };
+//		static const int deltaY[] = { 0, 1, 0, -1 };
+//
+//		int newX = posX + deltaX[(int)direction];
+//		int newY = posY + deltaY[(int)direction];
+//
+//		// 2-4 이동이 가능한 지 판별한다.
+//		// 2-4-1 벽에 닿았을 때 => posX, posY의 위치가 [0, size]
+//		// 2-4-2 이미 지나온 곳일 때 => arr[newX][newY] != 0
+//		if (newY < 0 || newY >= size || newX < 0 || newX >= size ||
+//			arr[newY * size + newX] != NOT_VISITED)
+//		{
+//			// 2-5. 이동이 불가능하므로 방향 전환을 한다.
+//			direction = (Direction)((direction + 1) % DIR_MAX);
+//
+//			// 2-6 위치값을 다시 계산한다.
+//			int newX = posX + deltaX[(int)direction];
+//			int newY = posY + deltaY[(int)direction];
+//		}
+//		// 2-7 이동한다.
+//		posX = newX;
+//		posY = newY;
+//	}
+//
+//
+//	// 3. 출력
+//	for (int i = 0; i < size; i++)
+//	{
+//		for (int j = 0; j < size; j++)
+//		{
+//			cout << arr[i * size + j] << "\t";
+//		}
+//
+//		cout << "\n";
+//	}
+//}

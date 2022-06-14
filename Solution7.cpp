@@ -3,46 +3,51 @@
 using namespace std;
 
 
-
-
-int main()
+class Bingo
 {
-	// 1. 빙고게임 판 생성.
-	// 1-1. 2차원 배열
+public :
 
-	int board[5][5] = { 0 };
+	Bingo() = default;
+	Bingo(const Bingo& other) = delete;
+	Bingo& operator=(const Bingo& other) = delete;
+	~Bingo() = default;
 
-	// 1-2. 랜덤하게 수를 배치.
-	srand(time(NULL));
-	bool isExist[26] = { false };
 
-	for (int i = 0; i < 5; i++)
+	void bingoMap()
 	{
-		for (int j = 0; j < 5; j++)
-		{
-			int boardNum = 0;
-			do
-			{
-				boardNum = rand() % 25 + 1;
+		// 1-2. 랜덤하게 수를 배치.
+		srand(time(NULL));
+		bool isExist[26] = { false };
 
-			} while (isExist[boardNum]);
-
-			board[i][j] = boardNum;
-			isExist[boardNum] = true;
-		}
-	}
-		
-	int bingoCount = 0;
-
-	while (1)
-	{
-	
-		bool bingocheck = false;
 		for (int i = 0; i < 5; i++)
 		{
 			for (int j = 0; j < 5; j++)
 			{
-				if(board[i][j] != NULL)
+				int boardNum = 0;
+				do
+				{
+					boardNum = rand() % 25 + 1;
+
+				} while (isExist[boardNum]);
+
+				board[i][j] = boardNum;
+				isExist[boardNum] = true;
+			}
+		}
+	}
+
+	void bingoInput(int input)
+	{
+		// 2. 사용자로부터 입력을 받는다.
+		_input = input;
+	}
+	void bingoPrint()
+	{
+		for (int i = 0; i < 5; i++)
+		{
+			for (int j = 0; j < 5; j++)
+			{
+				if (board[i][j] != NULL)
 					cout << board[i][j] << "\t";
 				else
 					cout << "\t";
@@ -51,27 +56,21 @@ int main()
 		}
 		cout << "현재" << bingoCount << "줄의 빙고가 완성되었습니다." << endl;
 
-		// 2. 사용자로부터 입력을 받는다.
+		
 		cout << "숫자를 입력해주세요 : ";
-		int input;
-		cin >> input;
+		
+	}
+	
+	void bingoUpdate()
+	{
 
-		// 2-1. 플레이어의 입력을 의심해라.
-		// 3. 사용자의 입력이 유효한지 판단한다.
-		if (input <= 0 || input > 25)
-		{
-			// 3-1. 오입력이라면 1번부터 다시.
-
-
-		}
-
-		// 4. 숫자를 지워준다.
+		
 		for (int i = 0; i < 5; i++)
 		{
 			bool isExit = false;
 			for (int j = 0; j < 5; j++)
 			{
-				if (input == board[i][j])
+				if (_input == board[i][j])
 				{
 					board[i][j] = {  };
 					isExit = true;
@@ -86,12 +85,14 @@ int main()
 
 
 		}
-		//OUT:
-		// 
+	}
+
+	void bingoCheck()
+	{
 		// 5. 빙고 개수 확인.
 		// - 가로의 모든 숫자를 지운 것
 		int count = 0;
-	
+
 		for (int i = 0; i < 5; ++i)
 		{
 			bool isBingo = true;
@@ -102,7 +103,7 @@ int main()
 					isBingo = false;
 					break;
 				}
-			
+
 			}
 			if (isBingo)
 			{
@@ -120,7 +121,7 @@ int main()
 					isBingo = false;
 					break;
 				}
-					
+
 			}
 			if (isBingo)
 			{
@@ -138,12 +139,12 @@ int main()
 					break;
 				}
 			}
-		
+
 			if (isBingo)
 			{
 				count++;
 			}
-				
+
 		}
 
 
@@ -164,13 +165,46 @@ int main()
 				count++;
 			}
 		}
+		bingoCount = count;
+	}
+
+
+
+private :
+	int board[5][5] = { 0 };
+	bool bingocheck = false;
+	int _input = 0;
+	int bingoCount = 0;
+	
+};
+
+
+
+int main()
+{
+	// 1. 빙고게임 판 생성.
+	// 1-1. 2차원 배열
+
+	Bingo bingo;
+	
+	
+	bingo.bingoMap();
+	
+	while (1)
+	{
+	
+		int input;
+		bingo.bingoPrint();
+		cin >> input;
+		bingo.bingoInput(input);
+		bingo.bingoUpdate();
+		bingo.bingoCheck();
 
 		system("cls");
-		bingoCount = count;
 
 	}
 
-	// 6. 1번 부터 반복.
+	
 
 	return 0;
 
@@ -185,197 +219,197 @@ int main()
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //
 //
-//bool verticalBingo1 = false;
-//bool verticalBingo2 = false;
-//bool verticalBingo3 = false;
-//bool verticalBingo4 = false;
-//bool verticalBingo5 = false;
-//
-//bool horizontalBingo1 = false;
-//bool horizontalBingo2 = false;
-//bool horizontalBingo3 = false;
-//bool horizontalBingo4 = false;
-//bool horizontalBingo5 = false;
-//
-//bool diagonalBingo1 = false;
-//bool diagonalBingo2 = false;
 //int main()
 //{
-//	// 랜덤으로 1 ~ 25의 값을 가진 이차원 배열 생성
-//	srand(time(NULL));
+//	// 1. 빙고게임 판 생성.
+//	// 1-1. 2차원 배열
 //
-//	int bingoElement[5][5];
+//	int board[5][5] = { 0 };
+//
+//	// 1-2. 랜덤하게 수를 배치.
+//	srand(time(NULL));
+//	bool isExist[26] = { false };
+//
 //	for (int i = 0; i < 5; i++)
 //	{
 //		for (int j = 0; j < 5; j++)
 //		{
-//			
-//				bingoElement[i][j] = rand() % 25 + 1;
-//			
-//		}
+//			int boardNum = 0;
+//			do
+//			{
+//				boardNum = rand() % 25 + 1;
 //
+//			} while (isExist[boardNum]);
+//
+//			board[i][j] = boardNum;
+//			isExist[boardNum] = true;
+//		}
 //	}
-//	// 빙고의 수를 세어줄 변수 생성
+//
 //	int bingoCount = 0;
 //
-//	// 입력값 변수 생성
-//	int bingoNum;
-//
-//	// 게임 루프 생성
 //	while (1)
 //	{
-//		bool bingoCheck = false;
-//		// 빙고 이차원 배열 
+//
+//		bool bingocheck = false;
 //		for (int i = 0; i < 5; i++)
 //		{
 //			for (int j = 0; j < 5; j++)
 //			{
-//			
-//				cout << bingoElement[i][j] << '\t';
-//		
+//				if (board[i][j] != NULL)
+//					cout << board[i][j] << "\t";
+//				else
+//					cout << "\t";
 //			}
 //			cout << endl;
 //		}
-//		cout << "현재 빙고의 개수 : " << bingoCount << endl;
-//		cout << "숫자를 입력해주세요" << endl;
-//		cin >> bingoNum;
+//		cout << "현재" << bingoCount << "줄의 빙고가 완성되었습니다." << endl;
 //
-//		// 입력값과 빙고의 값이 일치하면 0으로 변환
+//		// 2. 사용자로부터 입력을 받는다.
+//		cout << "숫자를 입력해주세요 : ";
+//		int input;
+//		cin >> input;
+//
+//		// 2-1. 플레이어의 입력을 의심해라.
+//		// 3. 사용자의 입력이 유효한지 판단한다.
+//		if (input <= 0 || input > 25)
+//		{
+//			// 3-1. 오입력이라면 1번부터 다시.
+//
+//
+//		}
+//
+//		// 4. 숫자를 지워준다.
 //		for (int i = 0; i < 5; i++)
 //		{
+//			bool isExit = false;
 //			for (int j = 0; j < 5; j++)
 //			{
-//				if (bingoNum == bingoElement[i][j])
+//				if (input == board[i][j])
 //				{
-//					bingoElement[i][j] = {  };
+//					board[i][j] = {  };
+//					isExit = true;
+//					break;
+//					//goto OUT;
 //				}
-//				// 빙고가 완성되면, 빙고 개수 count (중첩된 빙고개수 제외하는 것이 어려웠음. 리팩토링 필요.)
-//				if (bingoElement[0][0] == NULL && bingoElement[1][1] == NULL && bingoElement[2][2] == NULL && bingoElement[3][3] == NULL && bingoElement[4][4] == NULL && diagonalBingo1 == false)
+//			}
+//			if (isExit)
+//			{
+//				break;
+//			}
+//
+//
+//		}
+//		//OUT:
+//		// 
+//		// 5. 빙고 개수 확인.
+//		// - 가로의 모든 숫자를 지운 것
+//		int count = 0;
+//
+//		for (int i = 0; i < 5; ++i)
+//		{
+//			bool isBingo = true;
+//			for (int j = 0; j < 5; j++)
+//			{
+//				if (board[i][j] != NULL)
 //				{
-//					bingoCheck = true;
-//					diagonalBingo1 = true;
-//					
+//					isBingo = false;
+//					break;
 //				}
-//				if (bingoElement[0][4] == NULL && bingoElement[1][3] == NULL && bingoElement[2][2] == NULL && bingoElement[3][1] == NULL && bingoElement[4][0] == NULL && diagonalBingo2 == false)
-//				{
-//					bingoCheck = true;
-//					diagonalBingo2 = true;
-//					
-//				}
-//						switch (i)
-//						{
-//						case 0:
-//							if (bingoElement[i][0] == NULL && bingoElement[i][1] == NULL && bingoElement[i][2] == NULL && bingoElement[i][3] == NULL && bingoElement[i][4] == NULL && verticalBingo1 == false)
-//							{
-//								bingoCheck = true;
-//								verticalBingo1 = true;
-//								break;
-//							}
-//						case 1:
-//							if (bingoElement[i][0] == NULL && bingoElement[i][1] == NULL && bingoElement[i][2] == NULL && bingoElement[i][3] == NULL && bingoElement[i][4] == NULL && verticalBingo2 == false)
-//							{
-//								bingoCheck = true;
-//								verticalBingo2 = true;
-//								break;
-//							}
-//						case 2:
-//							if (bingoElement[i][0] == NULL && bingoElement[i][1] == NULL && bingoElement[i][2] == NULL && bingoElement[i][3] == NULL && bingoElement[i][4] == NULL && verticalBingo3 == false)
-//							{
-//								bingoCheck = true;
-//								verticalBingo3 = true;
-//								break;
-//							}
-//						case 3:
-//							if (bingoElement[i][0] == NULL && bingoElement[i][1] == NULL && bingoElement[i][2] == NULL && bingoElement[i][3] == NULL && bingoElement[i][4] == NULL && verticalBingo4 == false)
-//							{
-//								bingoCheck = true;
-//								verticalBingo4 = true;
-//								break;
-//							}
-//						case 4:
-//							if (bingoElement[i][0] == NULL && bingoElement[i][1] == NULL && bingoElement[i][2] == NULL && bingoElement[i][3] == NULL && bingoElement[i][4] == NULL && verticalBingo5 == false)
-//							{
-//								bingoCheck = true;
-//								verticalBingo5 = true;
-//								break;
-//							}
-//						}
-//					
-//						switch (j)
-//						{
-//						case 0:
-//							if (bingoElement[0][j] == NULL && bingoElement[1][j] == NULL && bingoElement[2][j] == NULL && bingoElement[3][j] == NULL && bingoElement[4][j] == NULL && horizontalBingo1 == false)
-//							{
-//								bingoCheck = true;
-//								horizontalBingo1 = true;
-//								break;
-//							}
-//						case 1:
-//							if (bingoElement[0][j] == NULL && bingoElement[1][j] == NULL && bingoElement[2][j] == NULL && bingoElement[3][j] == NULL && bingoElement[4][j] == NULL && horizontalBingo2 == false)
-//							{
-//								bingoCheck = true;
-//								horizontalBingo2 = true;
-//								break;
-//							}
-//						case 2:
-//							if (bingoElement[0][j] == NULL && bingoElement[1][j] == NULL && bingoElement[2][j] == NULL && bingoElement[3][j] == NULL && bingoElement[4][j] == NULL && horizontalBingo3 == false)
-//							{
-//								bingoCheck = true;
-//								horizontalBingo3 = true;
-//								break;
-//							}
-//						case 3:
-//							if (bingoElement[0][j] == NULL && bingoElement[1][j] == NULL && bingoElement[2][j] == NULL && bingoElement[3][j] == NULL && bingoElement[4][j] == NULL && horizontalBingo4 == false)
-//							{
-//								bingoCheck = true;
-//								horizontalBingo4 = true;
-//								break;
-//							}
-//						case 4:
-//							if (bingoElement[0][j] == NULL && bingoElement[1][j] == NULL && bingoElement[2][j] == NULL && bingoElement[3][j] == NULL && bingoElement[4][j] == NULL && horizontalBingo5 == false)
-//							{
-//								bingoCheck = true;
-//								horizontalBingo5 = true;
-//								break;
-//							}
-//						}
-//						
-//						
-//			
+//
+//			}
+//			if (isBingo)
+//			{
+//				count++;
 //			}
 //		}
-//		if (bingoCheck == true)
-//			bingoCount++;
-//		
-//		//스크린 초기화
+//		// - 세로의 모든 숫자를 지운 것
+//		for (int i = 0; i < 5; ++i)
+//		{
+//			bool isBingo = true;
+//			for (int j = 0; j < 5; j++)
+//			{
+//				if (board[j][i] != NULL)
+//				{
+//					isBingo = false;
+//					break;
+//				}
+//
+//			}
+//			if (isBingo)
+//			{
+//				count++;
+//			}
+//		}
+//		// 대각선 1
+//		{
+//			bool isBingo = true;
+//			for (int i = 0; i < 5; ++i)
+//			{
+//				if (board[i][i] != NULL)
+//				{
+//					isBingo = false;
+//					break;
+//				}
+//			}
+//
+//			if (isBingo)
+//			{
+//				count++;
+//			}
+//
+//		}
+//
+//
+//		//대각선 2.
+//		{
+//			bool isBingo = true;
+//			for (int i = 0; i <= 2; ++i)
+//			{
+//				if (board[i][4 - i] != NULL || board[4 - i][i] != NULL)
+//				{
+//					isBingo = false;
+//					break;
+//				}
+//			}
+//
+//			if (isBingo)
+//			{
+//				count++;
+//			}
+//		}
+//
 //		system("cls");
+//		bingoCount = count;
+//
 //	}
 //
+//	// 6. 1번 부터 반복.
+//
 //	return 0;
+//
 //}
+//
+//
+//
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -203,24 +203,22 @@ int main(void)
 //
 //			bool isExist = false;
 //
+//			do
+//			{
+//			candidate = _lotto[curPos];
+//			isExist = false;
 //			for (int i = 0; i < digitCount; i++)
 //			{
-//				candidate = _lotto[curPos];
-//				isExist = false;
-//				do
-//				{
 //					if (_lotto[curPos] == _lotto[i])
 //					{
 //						isExist = true;
-//						_lotto[curPos] = rand() % digitCount + 1;
-//						candidate = _lotto[curPos];
+
 //						break;
 //					}
 //				} while (isExist);
 //			}		
 //
 //			_lotto[curPos] = candidate;
-//			isExist= true;
 //			printf("%d \n", _lotto[curPos]);
 //		}
 //
